@@ -1,0 +1,13 @@
+// sidebar 宽度
+$sidebar-width: 256px;
+// sidebar 收起宽度
+$sidebar-collapsed-width: 80px;
+
+$navbar-height: 64px;
+
+
+:export {
+  sidebarWidth: $sidebar-width;
+  sidebarCollapsedWidth: $sidebar-collapsed-width;
+  navbarHeight:$navbar-height
+}
