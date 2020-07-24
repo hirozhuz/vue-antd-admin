@@ -36,7 +36,7 @@
         name: 'HeaderAvatar',
         computed: {
             currUser() {
-                return this.$store.getters.user
+                return this.$store.getters.userInfo
             }
         },
         components: {

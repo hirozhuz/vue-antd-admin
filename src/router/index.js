@@ -1,37 +1,59 @@
+// import Vue from 'vue'
+// import VueRouter from 'vue-router'
+// import Home from '../views/Home.vue'
+//
+// import BasicLayout from '@layout/BasicLayout'
+//
+// Vue.use(VueRouter)
+//
+// const routes = [
+//     {
+//         path: '/',
+//         name: 'Home',
+//         component: Home
+//     },
+//     {
+//         path: '/dashboard',
+//         redirect: '/dashboard/index',
+//         component: BasicLayout,
+//         children: [
+//             {
+//                 path: 'index',
+//                 component: () => import('@/views/Test'),
+//                 name: 'Dashboard',
+//                 meta: {
+//                     title: '测试标题',
+//                     icon: 'documentation'
+//                 }
+//             }
+//         ]
+//     }
+// ]
+//
+// const router = new VueRouter({
+//     routes
+// })
+//
+
+
+
+
 import Vue from 'vue'
-import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import Router from 'vue-router'
+import {constantRouterMap} from './routes'
 
-import BasicLayout from '@layout/BasicLayout'
+Vue.use(Router)
 
-Vue.use(VueRouter)
+let debug = process.env.NODE_ENV !== 'production'
 
-const routes = [
-    {
-        path: '/',
-        name: 'Home',
-        component: Home
+export default new Router({
+    routes: constantRouterMap,
+    strict: debug,
+    scrollBehavior() {
+        return {x: 0, y: 0}
     },
-    {
-        path: '/dashboard',
-        redirect: '/dashboard/index',
-        component: BasicLayout,
-        children: [
-            {
-                path: 'index',
-                component: () => import('@/views/About'),
-                name: 'Dashboard',
-                meta: {
-                    title: 'Documentation',
-                    icon: 'documentation'
-                }
-            }
-        ]
-    }
-]
-
-const router = new VueRouter({
-    routes
+    base  : process.env.VUE_APP_ROUTER_BASE || '/',
+    mode  : process.env.VUE_APP_ROUTER_MODE || 'hash'
 })
 
-export default router
+

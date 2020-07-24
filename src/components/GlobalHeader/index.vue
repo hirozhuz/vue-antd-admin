@@ -16,7 +16,7 @@
                     @click="toggleCollapse"/>
             <div v-if="layout === 'head'"
                  class="gongbao-header__menu">
-                <i-menu style="height: 64px; line-height: 64px;"
+                <i-menu class="gongbao-header__menu"
                         :theme="theme"
                         mode="horizontal"
                         :menuData="menuData"
@@ -47,21 +47,22 @@
     import HeaderAvatar from '@components/HeaderAvatar'
     import IMenu from '@components/SiderMenu'
 
+
     export default {
         name: 'GlobalHeader',
         props: ['collapsed', 'menuData'],
         computed: {
             isMobile() {
-                return this.$store.state.setting.isMobile
+                return this.$store.getters.isMobile
             },
             layout() {
-                return this.$store.state.setting.layout
+                return this.$store.getters.layout
             },
             theme() {
-                return this.layout === 'side' ? 'light' : this.$store.state.setting.theme
+                return this.layout === 'side' ? 'light' : this.$store.getters.theme
             },
             systemName() {
-                return this.$store.state.setting.systemName
+                return this.$store.getters.systemName
             },
         },
         methods: {
@@ -85,7 +86,7 @@
 </script>
 
 <style lang="scss">
-
+    @import "@assets/styles/varibles.scss";
 
     .gongbao-header {
         padding: 0 12px 0 0;
@@ -179,6 +180,11 @@
                 font-size: 16px;
                 color: rgba(0, 0, 0, .65);
             }
+        }
+
+        &__menu {
+            height: $navbar-height;
+            line-height: $navbar-height;
         }
     }
 </style>

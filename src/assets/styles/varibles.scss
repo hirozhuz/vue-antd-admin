@@ -5,9 +5,27 @@ $sidebar-collapsed-width: 80px;
 
 $navbar-height: 64px;
 
+$padding: 16px;
+
+
+// 组件背景色
+$component-background: #fff;
+
+
+/**
+ * 字号
+ */
+$font-size: 14px;
+
+$font-size-md: $font-size+2px;
+
+$font-size-lg: $font-size-md+2px;
+
+$font-size-sm: $font-size - 2px;
+
 
 :export {
   sidebarWidth: $sidebar-width;
   sidebarCollapsedWidth: $sidebar-collapsed-width;
-  navbarHeight:$navbar-height
+  navbarHeight: $navbar-height
 }

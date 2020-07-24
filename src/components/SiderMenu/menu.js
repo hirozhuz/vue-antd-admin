@@ -19,12 +19,48 @@
  * ]
  **/
 
+import path from 'path'
+
 import {Menu, Icon} from 'ant-design-vue'
+
+import {isExternal} from '@utils'
 
 const {Item, SubMenu} = Menu
 
-// 默认菜单图标数组，如果菜单没配置图标，则会设置从该数组随机取一个图标配置
-const iconArr = ['dashboard', 'user', 'form', 'setting', 'message', 'safety', 'bell', 'delete', 'code-o', 'poweroff', 'eye-o', 'hourglass']
+
+/**
+ * 格式化路径
+ * @param routePath
+ * @returns {string|*}
+ */
+function resolvePath(basePath, routePath) {
+    if (isExternal(routePath)) {
+        return routePath
+    }
+    return path.resolve(basePath, routePath)
+}
+
+/**
+ * 判断是否只有一个需要显示的子节点
+ * @param children
+ * @returns {*}
+ */
+function hasOneShowingChild(children = []) {
+    const showingChildren = children.filter(item => {
+        if (item.hidden) {
+            return false
+        } else {
+            return true
+        }
+    })
+
+    if (showingChildren.length === 0) {
+        return false
+    }
+    if (showingChildren.length === 1) {
+        return showingChildren[0]
+    }
+}
 
 export default {
     name: 'IMenu',
@@ -83,44 +119,64 @@ export default {
     },
     methods: {
         renderIcon: function (h, icon) {
-            return icon === 'none' ? null
-                : h(
-                    Icon,
-                    {
-                        props: {type: icon !== undefined ? icon : iconArr[Math.floor((Math.random() * iconArr.length))]}
-                    })
+            return icon ? h(
+                Icon,
+                {
+                    props: {type: icon}
+                }) : null
         },
-        renderMenuItem: function (h, menu, pIndex, index) {
+        renderMenuItem: function (h, menu, pIndex, index, basePath) {
+
+            const path = resolvePath(basePath, menu.path)
+            const meta = menu.meta || {}
+            let dom = null
+            if (isExternal(path)) {
+                dom = h(
+                    'a',
+                    {attrs: {href: path}},
+                    [
+                        this.renderIcon(h, meta.icon),
+                        h('span', [meta.title])
+                    ]
+                )
+            } else {
+                dom = h(
+                    'router-link',
+                    {
+                        props: {
+                            to: path
+                        }
+                    },
+                    [
+                        this.renderIcon(h, meta.icon),
+                        h('span', [meta.title])
+                    ]
+                )
+            }
             return h(
                 Item,
                 {
                     key: menu.path ? menu.path : 'item_' + pIndex + '_' + index
                 },
-                [
-                    h(
-                        'a',
-                        {attrs: {href: '#' + menu.path}},
-                        [
-                            this.renderIcon(h, menu.icon),
-                            h('span', [menu.name])
-                        ]
-                    )
-                ]
+                [dom]
             )
         },
-        renderSubMenu: function (h, menu, pIndex, index) {
-            var this2_ = this
-            var subItem = [h('span',
+        renderSubMenu: function (h, menu, pIndex, index, basePath) {
+            const this2_ = this
+            const meta = menu.meta || {}
+
+            const subItem = [h('span',
                 {slot: 'title'},
                 [
-                    this.renderIcon(h, menu.icon),
-                    h('span', [menu.name])
+                    this.renderIcon(h, meta.icon),
+                    h('span', [meta.title])
                 ]
             )]
-            var itemArr = []
-            var pIndex_ = pIndex + '_' + index
+            const itemArr = []
+            const pIndex_ = pIndex + '_' + index
+            const path = resolvePath(basePath, menu.path)
             menu.children.forEach(function (item, i) {
-                itemArr.push(this2_.renderItem(h, item, pIndex_, i))
+                itemArr.push(this2_.renderItem(h, item, pIndex_, i, path))
             })
             return h(
                 SubMenu,
@@ -128,20 +184,25 @@ export default {
                 subItem.concat(itemArr)
             )
         },
-        renderItem: function (h, menu, pIndex, index) {
-            if (!menu.invisible) {
-                return menu.children ? this.renderSubMenu(h, menu, pIndex, index) : this.renderMenuItem(h, menu, pIndex, index)
+        renderItem: function (h, menu, pIndex, index, basePath) {
+            if (!menu.hidden) {
+
+
+                return menu.children ?
+                    this.renderSubMenu(h, menu, pIndex, index, basePath) :
+                    this.renderMenuItem(h, menu, pIndex, index, basePath)
             }
         },
         renderMenu: function (h, menuTree) {
             var this2_ = this
             var menuArr = []
             menuTree.forEach(function (menu, i) {
-                menuArr.push(this2_.renderItem(h, menu, '0', i))
+                menuArr.push(this2_.renderItem(h, menu, '0', i, menu.path))
             })
             return menuArr
         },
         onOpenChange(openKeys) {
+            console.log(openKeys)
             const latestOpenKey = openKeys.find(key => this.openKeys.indexOf(key) === -1)
             if (this.rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
                 this.openKeys = openKeys

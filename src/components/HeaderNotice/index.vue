@@ -65,7 +65,7 @@
         },
         computed: {
             theme() {
-                return this.$store.state.setting.layout === 'side' ? 'light' : this.$store.state.setting.theme
+                return this.$store.getters.layout === 'side' ? 'light' : this.$store.getters.theme
             }
         },
         methods: {
