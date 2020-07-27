@@ -3,22 +3,17 @@
         <!-- 面包屑 -->
         <div class="page-header__breadcrumb" v-if="breadcrumb">
             <a-breadcrumb>
-                <a-breadcrumb-item v-if="item in breadcrumb"
-                                   :key="item.path"
+                <a-breadcrumb-item>
+                    <router-link to="/">首页</router-link>
+                </a-breadcrumb-item>
+                <template v-for="item in breadcrumb"
                 >
-                    {{item.name}}
-                </a-breadcrumb-item>
-            </a-breadcrumb>
-        </div>
-        <!-- todo 测试使用 -->
-        <div class="page-header__breadcrumb">
-            <a-breadcrumb>
-                <a-breadcrumb-item>
-                    首页
-                </a-breadcrumb-item>
-                <a-breadcrumb-item>
-                    统计
-                </a-breadcrumb-item>
+                    <a-breadcrumb-item :key="item.path"
+                                       v-if="showBreadcrumbItem(item)"
+                    >
+                        {{item.meta.title}}
+                    </a-breadcrumb-item>
+                </template>
             </a-breadcrumb>
         </div>
         <!-- 标题-->
@@ -56,6 +51,11 @@
         },
         data() {
             return {}
+        },
+        methods: {
+            showBreadcrumbItem(item) {
+                return item.meta && item.meta.title
+            }
         },
         components: {
             ABreadcrumb,

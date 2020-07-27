@@ -1,66 +1,11 @@
-/**
- * 该插件可根据菜单配置自动生成 ANTD menu组件
- * menuData示例：
- * [
- *  {
- *    title: '菜单标题',
- *    icon: '菜单图标',
- *    path: '菜单路由',
- *    invisible: 'boolean, 是否不可见',
- *    children: [子菜单配置]
- *  },
- *  {
- *    title: '菜单标题',
- *    icon: '菜单图标',
- *    path: '菜单路由',
- *    invisible: 'boolean, 是否不可见',
- *    children: [子菜单配置]
- *  }
- * ]
- **/
-
-import path from 'path'
-
 import {Menu, Icon} from 'ant-design-vue'
+
+import {resolvePath, hasOneShowingChild} from '@utils/menu'
 
 import {isExternal} from '@utils'
 
 const {Item, SubMenu} = Menu
 
-
-/**
- * 格式化路径
- * @param routePath
- * @returns {string|*}
- */
-function resolvePath(basePath, routePath) {
-    if (isExternal(routePath)) {
-        return routePath
-    }
-    return path.resolve(basePath, routePath)
-}
-
-/**
- * 判断是否只有一个需要显示的子节点
- * @param children
- * @returns {*}
- */
-function hasOneShowingChild(children = []) {
-    const showingChildren = children.filter(item => {
-        if (item.hidden) {
-            return false
-        } else {
-            return true
-        }
-    })
-
-    if (showingChildren.length === 0) {
-        return false
-    }
-    if (showingChildren.length === 1) {
-        return showingChildren[0]
-    }
-}
 
 export default {
     name: 'IMenu',
@@ -125,17 +70,20 @@ export default {
                     props: {type: icon}
                 }) : null
         },
-        renderMenuItem: function (h, menu, pIndex, index, basePath) {
+        renderMenuItem: function (h, menu, pIndex, index, basePath, parent) {
 
             const path = resolvePath(basePath, menu.path)
             const meta = menu.meta || {}
             let dom = null
+            const icon = meta.icon || (parent && parent.meta && parent.meta.icon)
+            // 判断是否为外部链接
+            // 如果为外部链接则直接渲染为a标签
             if (isExternal(path)) {
                 dom = h(
                     'a',
                     {attrs: {href: path}},
                     [
-                        this.renderIcon(h, meta.icon),
+                        this.renderIcon(h, icon),
                         h('span', [meta.title])
                     ]
                 )
@@ -148,7 +96,7 @@ export default {
                         }
                     },
                     [
-                        this.renderIcon(h, meta.icon),
+                        this.renderIcon(h, icon),
                         h('span', [meta.title])
                     ]
                 )
@@ -156,7 +104,7 @@ export default {
             return h(
                 Item,
                 {
-                    key: menu.path ? menu.path : 'item_' + pIndex + '_' + index
+                    key: path ? path : 'item_' + pIndex + '_' + index
                 },
                 [dom]
             )
@@ -180,17 +128,23 @@ export default {
             })
             return h(
                 SubMenu,
-                {key: menu.path ? menu.path : 'submenu_' + pIndex + '_' + index},
+                {key: path ? path : 'submenu_' + pIndex + '_' + index},
                 subItem.concat(itemArr)
             )
         },
         renderItem: function (h, menu, pIndex, index, basePath) {
+            // 如果menu
             if (!menu.hidden) {
-
-
-                return menu.children ?
-                    this.renderSubMenu(h, menu, pIndex, index, basePath) :
-                    this.renderMenuItem(h, menu, pIndex, index, basePath)
+                if (menu.children && menu.children.length) {
+                    const {child, length} = hasOneShowingChild(menu.children)
+                    if (length !== 0) {
+                        return length === 1 ?
+                            this.renderMenuItem(h, child, pIndex, index, basePath, menu) :
+                            this.renderSubMenu(h, menu, pIndex, index, basePath)
+                    }
+                } else {
+                    return this.renderMenuItem(h, menu, pIndex, index, basePath)
+                }
             }
         },
         renderMenu: function (h, menuTree) {
@@ -202,7 +156,6 @@ export default {
             return menuArr
         },
         onOpenChange(openKeys) {
-            console.log(openKeys)
             const latestOpenKey = openKeys.find(key => this.openKeys.indexOf(key) === -1)
             if (this.rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
                 this.openKeys = openKeys
@@ -217,7 +170,9 @@ export default {
             routes.forEach((item) => {
                 openKeys.push(item.path)
             })
-            this.collapsed || this.mode === 'horizontal' ? this.cachedOpenKeys = openKeys : this.openKeys = openKeys
+            this.collapsed || this.mode === 'horizontal' ?
+                this.cachedOpenKeys = openKeys :
+                this.openKeys = openKeys
         }
     },
     render(h) {

@@ -6,7 +6,7 @@ import {notification} from 'ant-design-vue'
 
 // 权限判断
 function hasPermission(role, permissionRoles) {
-    if (!permissionRoles) return true
+    if (!role) return true
     return permissionRoles.indexOf(role) > -1
 }
 
@@ -47,7 +47,7 @@ router.beforeEach(async (to, from, next) => {
                 }
             } else {
                 // 判断是否有权限进入
-                if (hasPermission(store.getters.role, to.name)) {
+                if (hasPermission(to.name, store.getters.role)) {
                     next()
                 } else {
                     // 否则提示401

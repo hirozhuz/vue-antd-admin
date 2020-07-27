@@ -42,3 +42,8 @@ export const DEFAULT_PAGES_SIZE = 20
 // 未授权http响应码
 export const UNAUTHORIZED_STATUS = 401
 
+// 角色权限
+export const ROLE = {
+    ADMIN: ['ArticleManagement'],
+    USER: []
+}

@@ -3,6 +3,7 @@
         <!-- header -->
         <page-header class="page-layout__header"
                      :title="headerTitle"
+                     :breadcrumb="breadcrumb"
         >
             <slot v-if="$slots.title" name="title" slot="title"/>
             <slot v-if="$slots.headerContent" name="headerContent"/>
@@ -44,6 +45,9 @@
                 const {meta} = route
                 const {title: metaTitle} = meta || {}
                 return title || metaTitle || ''
+            },
+            breadcrumb(){
+              return this.$route.matched
             }
         },
         components: {

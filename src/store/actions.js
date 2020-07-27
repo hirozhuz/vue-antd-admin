@@ -6,6 +6,8 @@ import {asyncRouterMap} from '@router/routes'
 import getUserInfoService from '@service/getUserInfoService'
 import loginByUserNameService from '@service/loginByUserNameService'
 
+import {ROLE} from '@config'
+
 /**
  * 通过roles判断是否与当前用户权限匹配
  * @param roles
@@ -71,7 +73,7 @@ export async function getUserInfo({commit}) {
 
     /* ---todo demo 使用 开始 --- */
     const {role} = userInfo
-    const menus = role === 'admin' ? ['Dashboard'] : []
+    const menus = role === 'admin' ? ROLE.ADMIN : ROLE.USER
     /* ---todo demo 使用 结束--- */
 
     commit(SET_ROLE, menus)

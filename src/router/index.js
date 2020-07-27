@@ -19,7 +19,7 @@
 //         children: [
 //             {
 //                 path: 'index',
-//                 component: () => import('@/views/Test'),
+//                 component: () => import('@/views/ArticleManagement'),
 //                 name: 'Dashboard',
 //                 meta: {
 //                     title: '测试标题',

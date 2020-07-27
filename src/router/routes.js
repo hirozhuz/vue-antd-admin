@@ -7,7 +7,7 @@ import BasicLayout from '@layout/BasicLayout'
 export const constantRouterMap = [
     {
         path: '/',
-        redirect: '/dashboard',
+        redirect: '/article',
         hidden: true,
     },
     {
@@ -15,41 +15,6 @@ export const constantRouterMap = [
         name: 'Login',
         hidden: true,
         component: () => import('@views/Login')
-    },
-    {
-        path: '/abc',
-        redirect: '/abc/index',
-        component: BasicLayout,
-        meta:{
-            title:'首页'
-        },
-        children: [
-            {
-                path: 'index',
-                component: () => import('@/views/Test'),
-                name: 'Abc',
-                meta: {
-                    title: '测试标题1',
-                    icon: 'documentation'
-                }
-            },
-            {
-                path: 'two',
-                name: 'Two',
-                component: () => import('@/views/Test'),
-                children: [
-                    {
-                        path: 'index',
-                        component: () => import('@/views/Test'),
-                        name: 'Def',
-                        meta: {
-                            title: '测试标题2',
-                            icon: 'documentation'
-                        }
-                    }
-                ]
-            },
-        ]
     },
     {
         path: '/404',
@@ -62,17 +27,17 @@ export const constantRouterMap = [
  * @type {{path: string, name: string, component: (function(): (Promise<*>|*)), meta: {roles: *[]}}[]}
  */
 export const asyncRouterMap = [{
-    path: '/dashboard',
-    redirect: '/dashboard/index',
+    path: '/article',
+    redirect: '/article/index',
     component: BasicLayout,
     children: [
         {
             path: 'index',
-            component: () => import('@/views/Test'),
-            name: 'Dashboard',
+            component: () => import('@/views/ArticleManagement'),
+            name: 'ArticleManagement',
             meta: {
-                title: '测试标题',
-                icon: 'documentation'
+                title: '文章',
+                icon: 'form'
             }
         }
     ]
